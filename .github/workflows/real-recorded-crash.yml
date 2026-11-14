@@ -38,6 +38,7 @@ env:
 
 jobs:
   real-recorded-crash:
+    if: ${{ github.repository == 'morluto/rea' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     strategy:

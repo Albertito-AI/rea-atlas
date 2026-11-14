@@ -11,6 +11,7 @@ env:
 
 jobs:
   sqlite:
+    if: ${{ github.repository == 'morluto/rea' }}
     name: SQLite runtime compatibility (Node ${{ matrix.node }})
     runs-on: ubuntu-latest
     timeout-minutes: 15
