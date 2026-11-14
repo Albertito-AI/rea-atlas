@@ -35,7 +35,7 @@ concurrency:
 jobs:
   release-proposal:
     name: Update release proposal
-    if: github.event_name == 'push'
+    if: ${{ github.repository == 'morluto/rea' && (github.event_name == 'push') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -107,10 +107,7 @@ jobs:
 
   merged-release:
     name: Release reviewed main merge
-    if: >-
-      github.event_name == 'pull_request' && github.event.pull_request.merged == true &&
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      startsWith(github.event.pull_request.head.ref, 'release-please--branches--main--')
+    if: ${{ github.repository == 'morluto/rea' && (github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.event.pull_request.head.ref, 'release-please--branches--main--')) }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -179,7 +176,7 @@ jobs:
 
   release-please:
     name: Release Please
-    if: github.event_name == 'workflow_dispatch'
+    if: ${{ github.repository == 'morluto/rea' && (github.event_name == 'workflow_dispatch') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -353,10 +350,7 @@ jobs:
   qualification:
     name: Qualify exact release revision
     needs: [merged-release, release-please]
-    if: >-
-      always() && !cancelled() &&
-      ((needs.merged-release.result == 'success' && needs.merged-release.outputs.release_created == 'true') ||
-      (needs.release-please.result == 'success' && inputs.phase == 'publish' && needs.release-please.outputs.release_created == 'true'))
+    if: ${{ github.repository == 'morluto/rea' && (always() && !cancelled() && ((needs.merged-release.result == 'success' && needs.merged-release.outputs.release_created == 'true') || (needs.release-please.result == 'success' && inputs.phase == 'publish' && needs.release-please.outputs.release_created == 'true'))) }}
     permissions:
       contents: read
       actions: read
@@ -373,8 +367,7 @@ jobs:
       TURBO_TOKEN: ""
       TURBO_CACHE: local:rw
     needs: [merged-release, release-please, qualification]
-    if: >-
-      always() && !cancelled() && needs.qualification.result == 'success'
+    if: ${{ github.repository == 'morluto/rea' && (always() && !cancelled() && needs.qualification.result == 'success') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -401,9 +394,7 @@ jobs:
   publish:
     name: Publish to npm
     needs: [merged-release, release-please, qualification, rehearsal]
-    if: >-
-      always() && !cancelled() &&
-      needs.qualification.result == 'success' && needs.rehearsal.result == 'success'
+    if: ${{ github.repository == 'morluto/rea' && (always() && !cancelled() && needs.qualification.result == 'success' && needs.rehearsal.result == 'success') }}
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ""
@@ -440,8 +431,7 @@ jobs:
   verify-npm:
     name: Verify published npm package
     needs: [merged-release, release-please, publish]
-    if: >-
-      always() && !cancelled() && needs.publish.result == 'success'
+    if: ${{ github.repository == 'morluto/rea' && (always() && !cancelled() && needs.publish.result == 'success') }}
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ""
@@ -477,10 +467,7 @@ jobs:
       TURBO_TOKEN: ""
       TURBO_CACHE: local:rw
     needs: [merged-release, release-please, verify-npm]
-    if: >-
-      always() && !cancelled() && needs.verify-npm.result == 'success' &&
-      ((needs.merged-release.result == 'success' && needs.merged-release.outputs.release_created == 'true') ||
-      (needs.release-please.result == 'success' && inputs.phase == 'publish' && needs.release-please.outputs.release_created == 'true'))
+    if: ${{ github.repository == 'morluto/rea' && (always() && !cancelled() && needs.verify-npm.result == 'success' && ((needs.merged-release.result == 'success' && needs.merged-release.outputs.release_created == 'true') || (needs.release-please.result == 'success' && inputs.phase == 'publish' && needs.release-please.outputs.release_created == 'true'))) }}
     runs-on: ubuntu-latest
     permissions:
       contents: read

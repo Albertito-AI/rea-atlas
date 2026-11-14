@@ -34,6 +34,7 @@ permissions:
 
 jobs:
   real-browser:
+    if: ${{ github.repository == 'morluto/rea' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
