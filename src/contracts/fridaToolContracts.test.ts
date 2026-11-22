@@ -123,6 +123,24 @@ describe("Frida tool contracts", () => {
     ).toBe(false);
   });
 
+  it("rejects process-name patterns at both numeric attachment boundaries", () => {
+    for (const name of ["start_frida_session", "instrument_with_frida"]) {
+      const schema = contract(name);
+      const source =
+        name === "instrument_with_frida"
+          ? { source_kind: "inline", source: "" }
+          : {};
+      expect(
+        schema.safeParse({ mode: "attach", pid: 512, ...source }).success,
+      ).toBe(true);
+      for (const pid of ["512", "fixture", "**/../**", ""]) {
+        expect(
+          schema.safeParse({ mode: "attach", pid, ...source }).success,
+        ).toBe(false);
+      }
+    }
+  });
+
   it("publishes the Frida device, process, and session operations", () => {
     expect(TOOL_CONTRACTS.map(({ name }) => name)).toEqual(
       expect.arrayContaining([

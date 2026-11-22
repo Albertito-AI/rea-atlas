@@ -115,6 +115,32 @@ themselves a vulnerability. A dependency advisory needs its actual REA exposure
 assessed; a complete exploit or diagnosis is not required to report a concern.
 If you are unsure whether a boundary is affected, use the private channel below.
 
+## Recorded optional Frida dependency exposure
+
+The 22 November 2026 lockfile retains `frida@17.23.2` as an optional runtime
+dependency and its `minimatch@10.2.5` dependency, which is covered by
+[GHSA-g3hv-75wg-m249](https://github.com/isaacs/minimatch/security/advisories/GHSA-g3hv-75wg-m249).
+The advisory concerns glob-pattern amplification with optimisation level 2 or
+higher. The dependency advisory remains visible; this assessment does not mark
+the package patched or add a scanner suppression.
+
+The reviewed REA CLI/MCP path selects existing processes by positive integer
+PID. Process-name metadata is display data. Spawn operations attach to the
+numeric PID returned by Frida; subsequent resume operations also use that PID.
+In Frida 17.23.2, numeric attachment and resume return the supplied PID before
+the process-name lookup that creates a minimatch instance. The affected matcher
+is therefore not reached through this reviewed application path. Direct Frida
+use outside REA and future changes to process selection require their own
+assessment.
+
+Keep this numeric selection boundary when changing Frida contracts or adapters.
+A process-name or glob selector requires a new exposure review. Dependency
+updates must also preserve installable runtime/plugin metadata: the shared
+artifact deliberately omits manifest overrides, so a source override that
+changes Frida's required major version cannot be silently dropped. Resolve the
+remaining dependency advisory through a compatible upstream update or a
+separately verified packaging change before claiming full remediation.
+
 ## Reporting a vulnerability
 
 Do not disclose vulnerabilities, proof-of-concept exploits, credentials,
