@@ -325,6 +325,7 @@ describe("FridaInstrumentationManager", () => {
     bindings.device.getProcessByPid = async () => ({
       ...bindings.device.process,
       pid: 513,
+      name: "**/../**",
     });
     const manager = new FridaInstrumentationManager({
       deviceManager: bindings,
@@ -337,7 +338,8 @@ describe("FridaInstrumentationManager", () => {
     expect(started.ok).toBe(true);
     if (!started.ok) return;
     expect(started.value.pid).toBe(512);
-    expect(started.value.target).toBe("fixture (pid 512)");
+    // Process-name metadata is display data; Frida receives the numeric selector.
+    expect(started.value.target).toBe("**/../** (pid 512)");
     expect(bindings.device.attachedTargets).toEqual([512]);
     await manager.closeSession(started.value.sessionId);
   });
@@ -520,11 +522,13 @@ describe("FridaInstrumentationManager", () => {
     const started = await manager.startSession({
       mode: "spawn",
       deviceId: "local",
-      program: "/tmp/fixture",
+      program: "/tmp/fixture[1]*",
     });
     expect(started.ok).toBe(true);
     if (!started.ok) return;
     expect(started.value.state).toBe("paused");
+    expect(bindings.device.spawned).toEqual(["/tmp/fixture[1]*"]);
+    expect(bindings.device.attachedTargets).toEqual([512]);
     expect(bindings.device.resumed).toEqual([]);
 
     const loaded = await manager.loadScript(started.value.sessionId, {
