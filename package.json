@@ -412,13 +412,20 @@
   },
   "overrides": {
     "@electron/asar": {
-      "glob": "14.0.4"
+      "glob": "14.0.4",
+      "minimatch@^10": "11.0.1"
     },
     "typed-rest-client": {
       "qs": "6.16.1"
     },
     "vitepress": {
       "vite": "6.4.5"
+    },
+    "@google-automations/git-file-utils": {
+      "minimatch@^10": "11.0.1"
+    },
+    "@stryker-mutator/core": {
+      "minimatch@^10": "11.0.1"
     }
   },
   "devDependencies": {
