@@ -411,6 +411,7 @@
     "zod": "4.6.6"
   },
   "overrides": {
+    "minimatch@^10": "11.0.1",
     "@electron/asar": {
       "glob": "14.0.4"
     },
